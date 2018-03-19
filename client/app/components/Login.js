@@ -9,7 +9,9 @@ class LogIn extends Component {
 		this.registerUser = this.registerUser.bind(this)
 		this.changeMode = this.changeMode.bind(this)
 		this.state = {
-			mode: 'logIn'
+			mode: 'logIn',
+			validEmail: '',
+			validPassword: ''
 		}
 	}
 
@@ -38,8 +40,11 @@ class LogIn extends Component {
 			},
 			body: JSON.stringify(this.state)
 		})
-			.then(res => res.json())
-			.then(json => console.log(json))
+			.then(res => {
+				res.status === 400 && this.setState({
+					validEmail: 'invalid'
+				})
+			})
 	}
 
 	render() {
@@ -79,6 +84,7 @@ class LogIn extends Component {
 						<div className="col">
 							<label>Email</label>
 							<input
+								className={this.state.validEmail}
 								name="email"
 								type="text"
 								placeholder="test@jflynn.com"
@@ -87,6 +93,7 @@ class LogIn extends Component {
 						<div className="col">
 							<label>Password</label>
 							<input
+								className={this.state.validPassword}
 								name="password"
 								type="password"
 								placeholder="Jakeiscool1"
