@@ -15,28 +15,44 @@ module.exports = (app) => {
   //     .catch((err) => next(err));
   // });
 
+	function validateEmail(address) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(address).toLowerCase());
+	}
+
   app.post('/api/users', function (req, res, next) {
 		const user = new User();
-		MongoClient.connect(url, function(err, client) {
-			assert.equal(null, err)
-			console.log('Connection Successful')
-			const db = client.db(dbName)
-			const collection = db.collection('users')
-			collection.find({"email": req.body.email}).toArray(function(err, docs){
-				assert.equal(err, null)
-				if(docs.length > 0) {
-					res.status(400)
-					res.send('E-mail already exists')
-				} else {
-					user.email = req.body.email
-					user.password = req.body.password
-			    user.save()
-			      .then(() => res.json(user))
-			      .catch((err) => next(err))
-				}
-			})
-			client.close()
-		})
+		const email = req.body.email
+		const password = req.body.password
+		if(validateEmail(email)) {
+			if(password.length > 6) {
+				MongoClient.connect(url, function(err, client) {
+					assert.equal(null, err)
+					const db = client.db(dbName)
+					const collection = db.collection('users')
+					collection.find({"email": email}).toArray(function(err, docs){
+						assert.equal(err, null)
+						if(docs.length > 0) {
+							res.status(400)
+							res.send('E-mail already exists')
+						} else {
+							user.email = email
+							user.password = password
+					    user.save()
+					      .then(() => res.json(user))
+					      .catch((err) => next(err))
+						}
+					})
+					client.close()
+				})
+			} else {
+				res.status(411)
+				res.send('Password not long enough')
+			}
+		} else {
+			res.status(412)
+			res.send('E-mail invalid')
+		}
 
   });
 

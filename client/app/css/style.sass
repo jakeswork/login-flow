@@ -33,8 +33,10 @@ body
 			margin: 0
 			padding: 5px
 			border: 1px solid $lightgrey
-			&.invalid
-				border: 1px solid $orange 
+			&.error
+				border: 1px solid $orange
+		.error-info
+			margin: 5px 0
 		h5
 			font-size: 20px
 			margin: 10px 0
@@ -65,3 +67,36 @@ body
 			cursor: pointer
 		span
 			margin-left: 5px
+.loading-overlay
+	position: absolute
+	background: transparentize($white, 0.5)
+	z-index: 2
+	top: 0
+	left: 0
+	right: 0
+	bottom: 0
+	display: flex
+	align-items: center
+	justify-content: center
+
+@keyframes spin
+	100%
+		transform: rotate(360deg)
+
+.spinner
+	width: 100px
+	height: 100px
+	display: flex
+	justify-content: center
+	align-items: center
+	margin: 10px 20px
+	&:before
+		content: ""
+		color: white
+		height: 50px
+		width: 50px
+		background: transparent
+		border-radius: 50%
+		border: 5px solid transparent
+		border-color: $blue $blue transparent transparent
+		animation: spin .8s infinite
