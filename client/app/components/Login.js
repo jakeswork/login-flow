@@ -9,8 +9,10 @@ class LogIn extends Component {
 		this.handleInput = this.handleInput.bind(this)
 		this.registerUser = this.registerUser.bind(this)
 		this.changeMode = this.changeMode.bind(this)
+		this.logIn = this.logIn.bind(this)
 		this.state = {
 			mode: 'logIn',
+			loading: true,
 			emailError: {
 				status: '',
 				text: ''
@@ -38,6 +40,82 @@ class LogIn extends Component {
 		this.state.mode === 'logIn' ? this.setState({mode: 'register', loading: false}) : this.setState({mode: 'logIn', loading: false, registerComplete: false})
 	}
 
+	logIn(e) {
+		e.preventDefault()
+		this.setState({
+			loading: true,
+			userLoggedIn: false
+		})
+		if(this.state.email) {
+			this.setState({
+				emailError: {
+					status: '',
+					text: ''
+				}
+			})
+			if(this.state.password && this.state.password.length > 6) {
+				this.setState({
+					passwordError: {
+						status: '',
+						text: ''
+					}
+				})
+				fetch('/api/users/login', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Accept': 'application/json'
+					},
+					body: JSON.stringify(this.state)
+				})
+					.then(res => {
+						this.setState({
+							loading: false
+						})
+						res.status === 412 && this.setState({
+							emailError: {
+								status: 'error',
+								text: 'incorrect-syntax'
+							}
+						})
+						res.status === 400 && this.setState({
+							emailError: {
+								status: 'error',
+								text: 'incorrect-email'
+							}
+						})
+						res.status === 411 && this.setState({
+							passwordError: {
+								status: 'error',
+								text: 'incorrect-length'
+							}
+						})
+						res.status === 200 && this.setState({
+							passwordError: {},
+							emailError: {},
+							userLoggedIn: true
+						})
+					})
+			} else {
+				this.setState({
+					passwordError: {
+						status: 'error',
+						text: 'no-length'
+					},
+					loading: false
+				})
+			}
+		} else {
+			this.setState({
+				emailError: {
+					status: 'error',
+					text: 'no-length'
+				},
+				loading: false
+			})
+		}
+	}
+
 	registerUser(e) {
 		e.preventDefault()
 		this.setState({
@@ -57,7 +135,7 @@ class LogIn extends Component {
 						text: ''
 					}
 				})
-				fetch('/api/users', {
+				fetch('/api/users/register', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -113,6 +191,12 @@ class LogIn extends Component {
 		}
 	}
 
+	componentDidMount() {
+		this.setState({
+			loading: false
+		})
+	}
+
 	render() {
 		return (
 			<div className="full-page">
@@ -129,12 +213,19 @@ class LogIn extends Component {
 						<h5>Login</h5>
 						<form>
 							<div className="col">
+								<div className="error-info">
+									{
+										this.state.emailError.status === 'error'
+											&& <p>The e-mail or password entered does not match any account.</p>
+									}
+								</div>
 								<label>Email</label>
 								<input
 									name="email"
 									type="text"
 									placeholder="test@jflynn.com"
-									onChange={this.handleInput} />
+									onChange={this.handleInput}
+									value={this.state.email} />
 							</div>
 							<div className="col">
 								<label>Password</label>
@@ -142,11 +233,18 @@ class LogIn extends Component {
 									name="password"
 									type="password"
 									placeholder="Jakeiscool1"
-									onChange={this.handleInput} />
+									onChange={this.handleInput}
+									value={this.state.password} />
 								<button className="hyperlink forgotten">Forgotten?</button>
+								<div className="error-info">
+									{
+										this.state.passwordError.text === 'incorrect-length' || this.state.passwordError.text === 'no-length'
+											&& "Your password needs to be at least 7 characters long."
+									}
+								</div>
 							</div>
 							<div className="col">
-								<button>Log In</button>
+								<button onClick={this.logIn}>Log In</button>
 								<span>or <button className="hyperlink" onClick={this.changeMode}>Sign Up</button></span>
 							</div>
 						</form>
@@ -180,7 +278,7 @@ class LogIn extends Component {
 									type="password"
 									placeholder="Jakeiscool1"
 									onChange={this.handleInput} />
-								<div>
+								<div className="error-info">
 									{
 										this.state.passwordError.text === 'incorrect-length' || this.state.passwordError.text === 'no-length'
 											&& "Your password needs to be at least 7 characters long."

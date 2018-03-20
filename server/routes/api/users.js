@@ -8,19 +8,13 @@ const dbName = 'local'
 
 module.exports = (app) => {
 	app.use(bodyParser.json())
-  // app.get('/api/counters', (req, res, next) => {
-  //   Counter.find()
-  //     .exec()
-  //     .then((counter) => res.json(counter))
-  //     .catch((err) => next(err));
-  // });
 
 	function validateEmail(address) {
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(address).toLowerCase());
 	}
 
-  app.post('/api/users', function (req, res, next) {
+  app.post('/api/users/register', function (req, res, next) {
 		const user = new User();
 		const email = req.body.email
 		const password = req.body.password
@@ -54,7 +48,33 @@ module.exports = (app) => {
 			res.send('E-mail invalid')
 		}
 
-  });
+  })
+
+	app.post('/api/users/login', function (req, res, next) {
+		const email = req.body.email
+		const password = req.body.password
+		if(validateEmail(email)) {
+			MongoClient.connect(url, function(err, client) {
+				assert.equal(null, err)
+				const db = client.db(dbName)
+				const collection = db.collection('users')
+				collection.find({"email": email, "password": password}).toArray(function(err, docs){
+					assert.equal(err, null)
+					if(docs.length > 0) {
+						res.send('User exists')
+					} else {
+						res.status(400)
+						res.send('Incorrect e-mail')
+					}
+				})
+				client.close()
+			})
+		} else {
+			res.status(412)
+			res.send('E-mail invalid')
+		}
+
+  })
 
   // app.delete('/api/counters/:id', function (req, res, next) {
   //   Counter.findOneAndRemove({ _id: req.params.id })
