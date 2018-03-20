@@ -23,6 +23,7 @@ class Login extends Component {
 						</div>
 						<label>Email</label>
 						<input
+							className={this.props.emailError.status}
 							name="email"
 							type="text"
 							placeholder="test@jflynn.com"
@@ -32,6 +33,7 @@ class Login extends Component {
 					<div className="col">
 						<label>Password</label>
 						<input
+							className={this.props.passwordError.status}
 							name="password"
 							type="password"
 							placeholder="Jakeiscool1"

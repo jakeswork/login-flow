@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Redirect } from 'react-router-dom'
 import 'whatwg-fetch';
 import queryString from 'query-string'
 import Loading from './Loading'
@@ -16,6 +17,9 @@ class Landing extends Component {
 		this.state = {
 			mode: 'logIn',
 			loading: true,
+			user: {
+				loggedIn: false
+			},
 			emailError: {
 				status: '',
 				text: ''
@@ -47,7 +51,9 @@ class Landing extends Component {
 		e.preventDefault()
 		this.setState({
 			loading: true,
-			userLoggedIn: false
+			user:{
+				loggedIn: false
+			}
 		})
 		if(this.state.email) {
 			this.setState({
@@ -84,8 +90,7 @@ class Landing extends Component {
 								loading: false,
 								passwordError: {},
 								emailError: {},
-								userLoggedIn: true,
-								user: data.docs[0]
+								user: { data: data.docs[0], loggedIn: true}
 							})
 						})
 						.catch(err => console.log(err))
@@ -216,8 +221,11 @@ class Landing extends Component {
 		return (
 			<div className="full-page">
 				{ this.state.loading && <Loading /> }
-				{ this.state.userLoggedIn
-					? <UserDashboard user={this.state.user}/>
+				{ this.state.user.loggedIn
+					? <Redirect to={{
+							pathname:"/account",
+							referrer: this.state.user
+						}}/>
 					:
 						this.state.registerComplete
 						? <div className="login-modal">

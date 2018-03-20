@@ -1,11 +1,18 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 
 class UserDashboard extends Component {
+	constructor(props) {
+		super(props)
+	}
+
 	render() {
 		return (
 			<div className="container">
-				{console.log(this.props)}
-				<h1>Welcome, {this.props.user.name}!</h1>
+				{this.props.location.referrer
+					? <h1>Welcome, {this.props.location.referrer.data.name}!</h1>
+					:	<p>You are not logged in. <Link to="/">Click here</Link> to log in.</p>
+				}
 			</div>
 		)
 	}
