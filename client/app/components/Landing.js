@@ -14,9 +14,9 @@ class Landing extends Component {
 		this.registerUser = this.registerUser.bind(this)
 		this.changeMode = this.changeMode.bind(this)
 		this.logIn = this.logIn.bind(this)
+		this.handleSubmit = this.handleSubmit.bind(this)
 		this.state = {
 			mode: 'logIn',
-			loading: true,
 			user: {
 				loggedIn: false
 			},
@@ -27,8 +27,17 @@ class Landing extends Component {
 			passwordError: {
 				status: '',
 				text: ''
+			},
+			nameError: {
+				status: '',
+				text: ''
 			}
 		}
+	}
+
+	handleSubmit(e) {
+		e.preventDefault()
+		return false
 	}
 
 	handleInput(e) {
@@ -206,14 +215,17 @@ class Landing extends Component {
 				nameError: {
 					status: 'error',
 					text: 'no-length'
-				}
+				},
+				loading: false
 			})
 		}
 	}
 
 	componentDidMount() {
 		this.setState({
-			loading: false
+			user: {
+				data: {}
+			}
 		})
 	}
 
@@ -238,6 +250,7 @@ class Landing extends Component {
 							{
 								this.state.mode === 'logIn'
 									? <Login
+											handleSubmit={this.handleSubmit}
 											email={this.state.email}
 											password={this.state.password}
 											action={this.handleInput}
@@ -247,9 +260,11 @@ class Landing extends Component {
 											logIn={this.logIn}
 										/>
 									: <Register
+											handleSubmit={this.handleSubmit}
 											email={this.state.email}
 											password={this.state.password}
 											action={this.handleInput}
+											nameError={this.state.nameError}
 											passwordError={this.state.passwordError}
 											emailError={this.state.emailError}
 											changeMode={this.changeMode}

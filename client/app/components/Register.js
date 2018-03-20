@@ -9,7 +9,7 @@ class Register extends Component {
 		return (
 			<div>
 				<h5>Register</h5>
-				<form>
+				<form onSubmit={this.props.handleSubmit}>
 					<div className="col">
 						<div className="error-info">
 							{
@@ -25,6 +25,7 @@ class Register extends Component {
 						</div>
 						<label>Name</label>
 						<input
+							className={this.props.nameError.status}
 							name="name"
 							type="text"
 							placeholder="Jake"
@@ -37,7 +38,7 @@ class Register extends Component {
 							className={this.props.emailError.status}
 							name="email"
 							type="text"
-							placeholder="test@jflynn.com"
+							placeholder="place@holder.com"
 							onChange={this.props.action} />
 					</div>
 					<div className="col">

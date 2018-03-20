@@ -2,7 +2,43 @@
 
 body
 	font-family: 'Karla', sans-serif
-
+.nav
+	position: fixed
+	display: flex
+	justify-content: space-between
+	flex-direction: row
+	top: 0
+	left: 0
+	right: 0
+	padding: 20px
+	border-bottom: 1px solid $lightgrey
+	background: white
+button
+	background: $blue
+	color: white
+	border: 0px
+	padding: 10px
+	width: 100px
+	cursor: pointer
+	&.delete
+		background: $orange
+		width: 150px
+		float: right
+.hyperlink
+	color: $blue
+	padding: 0
+	border: 0
+	background: transparent
+	width: auto
+	text-decoration: none
+	&:focus
+		outline: 0
+.container
+	max-width: 90%
+	width: 970px
+	margin: 0 auto
+	text-align: center
+	margin-top: 80px
 .full-page
 	height: 100vh
 	display: flex
@@ -44,27 +80,11 @@ body
 			color: $lightgrey
 			text-transform: uppercase
 			font-size: 14px
-		.hyperlink
-			color: $blue
-			padding: 0
-			border: 0
-			background: transparent
-			width: auto
-			text-decoration: none
-			&:focus
-				outline: 0
 		.forgotten
 			margin: 5px 0
 			position: absolute
 			right: 5px
 			top: 30px
-		button
-			background: $blue
-			color: white
-			border: 0px
-			padding: 10px
-			width: 100px
-			cursor: pointer
 		span
 			margin-left: 5px
 .loading-overlay

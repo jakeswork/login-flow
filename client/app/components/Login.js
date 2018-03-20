@@ -9,7 +9,7 @@ class Login extends Component {
 		return (
 			<div>
 				<h5>Login</h5>
-				<form>
+				<form onSubmit={this.props.handleSubmit}>
 					<div className="col">
 						<div className="error-info">
 							{
@@ -26,9 +26,8 @@ class Login extends Component {
 							className={this.props.emailError.status}
 							name="email"
 							type="text"
-							placeholder="test@jflynn.com"
-							onChange={this.props.action}
-							value={this.props.email} />
+							placeholder={this.props.email || 'place@holder.com'}
+							onChange={this.props.action} />
 					</div>
 					<div className="col">
 						<label>Password</label>
@@ -37,8 +36,7 @@ class Login extends Component {
 							name="password"
 							type="password"
 							placeholder="Jakeiscool1"
-							onChange={this.props.action}
-							value={this.props.password} />
+							onChange={this.props.action} />
 						<button className="hyperlink forgotten">Forgotten?</button>
 					</div>
 					<div className="col">
