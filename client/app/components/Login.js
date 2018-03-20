@@ -1,300 +1,52 @@
 import React, { Component } from 'react'
-import 'whatwg-fetch';
-import queryString from 'query-string'
-import Loading from './Loading'
 
-class LogIn extends Component {
+class Login extends Component {
 	constructor(props) {
 		super(props)
-		this.handleInput = this.handleInput.bind(this)
-		this.registerUser = this.registerUser.bind(this)
-		this.changeMode = this.changeMode.bind(this)
-		this.logIn = this.logIn.bind(this)
-		this.state = {
-			mode: 'logIn',
-			loading: true,
-			emailError: {
-				status: '',
-				text: ''
-			},
-			passwordError: {
-				status: '',
-				text: ''
-			}
-		}
-	}
-
-	handleInput(e) {
-		const target = e.target,
-		value = target.value,
-		name = target.name
-
-		this.setState({
-			[name]: value
-		})
-	}
-
-	changeMode(e) {
-		e.preventDefault()
-		this.setState({loading: true})
-		this.state.mode === 'logIn' ? this.setState({mode: 'register', loading: false}) : this.setState({mode: 'logIn', loading: false, registerComplete: false})
-	}
-
-	logIn(e) {
-		e.preventDefault()
-		this.setState({
-			loading: true,
-			userLoggedIn: false
-		})
-		if(this.state.email) {
-			this.setState({
-				emailError: {
-					status: '',
-					text: ''
-				}
-			})
-			if(this.state.password && this.state.password.length > 6) {
-				this.setState({
-					passwordError: {
-						status: '',
-						text: ''
-					}
-				})
-				fetch('/api/users/login', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'Accept': 'application/json'
-					},
-					body: JSON.stringify(this.state)
-				})
-					.then(res => {
-						this.setState({
-							loading: false
-						})
-						res.status === 412 && this.setState({
-							emailError: {
-								status: 'error',
-								text: 'incorrect-syntax'
-							}
-						})
-						res.status === 400 && this.setState({
-							emailError: {
-								status: 'error',
-								text: 'incorrect-email'
-							}
-						})
-						res.status === 411 && this.setState({
-							passwordError: {
-								status: 'error',
-								text: 'incorrect-length'
-							}
-						})
-						res.status === 200 && this.setState({
-							passwordError: {},
-							emailError: {},
-							userLoggedIn: true
-						})
-					})
-			} else {
-				this.setState({
-					passwordError: {
-						status: 'error',
-						text: 'no-length'
-					},
-					loading: false
-				})
-			}
-		} else {
-			this.setState({
-				emailError: {
-					status: 'error',
-					text: 'no-length'
-				},
-				loading: false
-			})
-		}
-	}
-
-	registerUser(e) {
-		e.preventDefault()
-		this.setState({
-			loading: true
-		})
-		if(this.state.email) {
-			this.setState({
-				emailError: {
-					status: '',
-					text: ''
-				}
-			})
-			if(this.state.password && this.state.password.length > 6) {
-				this.setState({
-					passwordError: {
-						status: '',
-						text: ''
-					}
-				})
-				fetch('/api/users/register', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'Accept': 'application/json'
-					},
-					body: JSON.stringify(this.state)
-				})
-					.then(res => {
-						this.setState({
-							loading: false
-						})
-						res.status === 412 && this.setState({
-							emailError: {
-								status: 'error',
-								text: 'incorrect-syntax'
-							}
-						})
-						res.status === 400 && this.setState({
-							emailError: {
-								status: 'error',
-								text: 'already-exists'
-							}
-						})
-						res.status === 411 && this.setState({
-							passwordError: {
-								status: 'error',
-								text: 'incorrect-length'
-							}
-						})
-						res.status === 200 && this.setState({
-							passwordError: {},
-							emailError: {},
-							registerComplete: true
-						})
-					})
-			} else {
-				this.setState({
-					passwordError: {
-						status: 'error',
-						text: 'no-length'
-					},
-					loading: false
-				})
-			}
-		} else {
-			this.setState({
-				emailError: {
-					status: 'error',
-					text: 'no-length'
-				},
-				loading: false
-			})
-		}
-	}
-
-	componentDidMount() {
-		this.setState({
-			loading: false
-		})
 	}
 
 	render() {
 		return (
-			<div className="full-page">
-				{ this.state.loading && <Loading /> }
-				{ this.state.registerComplete ?
-					<div className="login-modal">
-						<h5>Success!</h5>
-						<p>Thanks for registering</p>
-						<p>You can now <button className="hyperlink" onClick={this.changeMode}>log in</button> to your account.</p>
+			<div>
+				<h5>Login</h5>
+				<form>
+					<div className="col">
+						<div className="error-info">
+							{
+								this.props.emailError.status === 'error'
+									&& <p>The e-mail or password entered does not match any account.</p>
+							}
+							{
+								this.props.passwordError.text === 'incorrect-length' || this.props.passwordError.text === 'no-length'
+									&& "Your password needs to be at least 7 characters long."
+							}
+						</div>
+						<label>Email</label>
+						<input
+							name="email"
+							type="text"
+							placeholder="test@jflynn.com"
+							onChange={this.props.action}
+							value={this.props.email} />
 					</div>
-					:
-					this.state.mode === 'logIn' ?
-					<div className="login-modal">
-						<h5>Login</h5>
-						<form>
-							<div className="col">
-								<div className="error-info">
-									{
-										this.state.emailError.status === 'error'
-											&& <p>The e-mail or password entered does not match any account.</p>
-									}
-								</div>
-								<label>Email</label>
-								<input
-									name="email"
-									type="text"
-									placeholder="test@jflynn.com"
-									onChange={this.handleInput}
-									value={this.state.email} />
-							</div>
-							<div className="col">
-								<label>Password</label>
-								<input
-									name="password"
-									type="password"
-									placeholder="Jakeiscool1"
-									onChange={this.handleInput}
-									value={this.state.password} />
-								<button className="hyperlink forgotten">Forgotten?</button>
-								<div className="error-info">
-									{
-										this.state.passwordError.text === 'incorrect-length' || this.state.passwordError.text === 'no-length'
-											&& "Your password needs to be at least 7 characters long."
-									}
-								</div>
-							</div>
-							<div className="col">
-								<button onClick={this.logIn}>Log In</button>
-								<span>or <button className="hyperlink" onClick={this.changeMode}>Sign Up</button></span>
-							</div>
-						</form>
+					<div className="col">
+						<label>Password</label>
+						<input
+							name="password"
+							type="password"
+							placeholder="Jakeiscool1"
+							onChange={this.props.action}
+							value={this.props.password} />
+						<button className="hyperlink forgotten">Forgotten?</button>
 					</div>
-					:
-					<div className="login-modal">
-						<h5>Register</h5>
-						<form>
-							<div className="col">
-								<label>Email</label>
-								<input
-									className={this.state.emailError.status}
-									name="email"
-									type="text"
-									placeholder="test@jflynn.com"
-									onChange={this.handleInput} />
-								<div className="error-info">
-									{
-										this.state.emailError.text === 'already-exists'
-											? <p className="animated bounceInDown">It looks like this e-mail address already exists.</p>
-											: this.state.emailError.status === 'error'
-												&& <p className="animated bounceInDown">Please enter your full e-mail address.</p>
-									}
-								</div>
-							</div>
-							<div className="col">
-								<label>Password</label>
-								<input
-									className={this.state.passwordError.status}
-									name="password"
-									type="password"
-									placeholder="Jakeiscool1"
-									onChange={this.handleInput} />
-								<div className="error-info">
-									{
-										this.state.passwordError.text === 'incorrect-length' || this.state.passwordError.text === 'no-length'
-											&& "Your password needs to be at least 7 characters long."
-									}
-								</div>
-							</div>
-							<div className="col">
-								<button onClick={this.registerUser}>Sign Up</button>
-								<span>or <button className="hyperlink" onClick={this.changeMode}>Log In</button></span>
-							</div>
-						</form>
+					<div className="col">
+						<button onClick={this.props.logIn}>Log In</button>
+						<span>or <button className="hyperlink" onClick={this.props.changeMode}>Sign Up</button></span>
 					</div>
-				}
+				</form>
 			</div>
 		)
 	}
 }
 
-export default LogIn
+export default Login

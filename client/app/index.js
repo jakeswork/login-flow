@@ -8,14 +8,16 @@ import {
 } from 'react-router-dom'
 import App from './components/App'
 import NotFound from './components/NotFound'
-import Login from './components/Login'
+import Landing from './components/Landing'
+import UserDashboard from './components/UserDashboard'
 import './css/main.sass'
 
 render((
   <Router>
     <App>
       <Switch>
-        <Route exact path="/" component={Login}/>
+        <Route exact path="/" component={Landing}/>
+				<Route exact path="/account" component={UserDashboard} />
         <Route component={NotFound}/>
       </Switch>
     </App>

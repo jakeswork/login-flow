@@ -8,6 +8,14 @@ const UserSchema = new mongoose.Schema({
 	password: {
 		type: String,
 		default: ''
+	},
+	name: {
+		type: String,
+		default: ''
+	},
+	createdAt: {
+		type: Date,
+		default: new Date()
 	}
 });
 

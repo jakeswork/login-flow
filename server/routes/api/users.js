@@ -17,6 +17,7 @@ module.exports = (app) => {
   app.post('/api/users/register', function (req, res, next) {
 		const user = new User();
 		const email = req.body.email
+		const name = req.body.name
 		const password = req.body.password
 		if(validateEmail(email)) {
 			if(password.length > 6) {
@@ -32,6 +33,7 @@ module.exports = (app) => {
 						} else {
 							user.email = email
 							user.password = password
+							user.name = name
 					    user.save()
 					      .then(() => res.json(user))
 					      .catch((err) => next(err))
@@ -61,7 +63,7 @@ module.exports = (app) => {
 				collection.find({"email": email, "password": password}).toArray(function(err, docs){
 					assert.equal(err, null)
 					if(docs.length > 0) {
-						res.send('User exists')
+						res.send(JSON.stringify({docs}))
 					} else {
 						res.status(400)
 						res.send('Incorrect e-mail')
