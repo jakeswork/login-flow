@@ -240,13 +240,13 @@ class Landing extends Component {
 						}}/>
 					:
 						this.state.registerComplete
-						? <div className="login-modal">
+						? <div className="modal">
 								<h5>Success!</h5>
 								<p>Thanks for registering</p>
 								<p>You can now <button className="hyperlink" onClick={this.changeMode}>log in</button> to your account.</p>
 							</div>
 
-						: <div className="login-modal">
+						: <div className="modal">
 							{
 								this.state.mode === 'logIn'
 									? <Login

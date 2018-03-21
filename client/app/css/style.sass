@@ -24,6 +24,8 @@ button
 		background: $orange
 		width: 150px
 		float: right
+	&.confirm
+		width: auto
 .hyperlink
 	color: $blue
 	padding: 0
@@ -52,42 +54,42 @@ button
 		align-items: center
 		flex-direction: column
 		text-align: left
-	.login-modal
-		padding: 20px
-		border-radius: 5px
+.modal
+	padding: 20px
+	border-radius: 5px
+	border: 1px solid $lightgrey
+	background: white
+	width: 400px
+	max-width: 90%
+	margin: 0 auto
+	.col
+		width: 90%
+		position: relative
+		padding: 10px 0
+	input
+		width: calc(100% - 10px)
+		margin: 0
+		padding: 5px
 		border: 1px solid $lightgrey
-		background: white
-		width: 400px
-		max-width: 90%
-		margin: 0 auto
-		.col
-			width: 90%
-			position: relative
-			padding: 10px 0
-		input
-			width: calc(100% - 10px)
-			margin: 0
-			padding: 5px
-			border: 1px solid $lightgrey
-			&.error
-				border: 1px solid $orange
-		.error-info
-			margin: 5px 0
-		h5
-			font-size: 20px
-			margin: 10px 0
-		label
-			color: $lightgrey
-			text-transform: uppercase
-			font-size: 14px
-		.forgotten
-			margin: 5px 0
-			position: absolute
-			right: 5px
-			top: 30px
-		span
-			margin-left: 5px
-.loading-overlay
+		&.error
+			border: 1px solid $orange
+	.error-info
+		margin: 5px 0
+	h5
+		font-size: 20px
+		margin: 10px 0
+	label
+		color: $lightgrey
+		text-transform: uppercase
+		font-size: 14px
+	.forgotten
+		margin: 5px 0
+		position: absolute
+		right: 5px
+		top: 30px
+	span
+		margin-left: 5px
+.overlay
 	position: absolute
 	background: transparentize($white, 0.5)
 	z-index: 2

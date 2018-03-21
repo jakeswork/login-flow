@@ -78,12 +78,13 @@ module.exports = (app) => {
 
   })
 
-  // app.delete('/api/counters/:id', function (req, res, next) {
-  //   Counter.findOneAndRemove({ _id: req.params.id })
-  //     .exec()
-  //     .then((counter) => res.json())
-  //     .catch((err) => next(err));
-  // });
+	app.delete('/api/users/remove/:id', function (req, res, next) {
+	  User.findOneAndRemove({ _id: req.params.id })
+	    .exec()
+	    .then((user) => res.json())
+	    .catch((err) => next(err));
+	});
+
 	//
   // app.put('/api/counters/:id/increment', (req, res, next) => {
   //   Counter.findById(req.params.id)
