@@ -85,18 +85,38 @@ module.exports = (app) => {
 	    .catch((err) => next(err));
 	});
 
-	//
-  // app.put('/api/counters/:id/increment', (req, res, next) => {
-  //   Counter.findById(req.params.id)
-  //     .exec()
-  //     .then((counter) => {
-  //       counter.count++;
-	//
-  //       counter.save()
-  //         .then(() => res.json(counter))
-  //         .catch((err) => next(err));
-  //     })
-  //     .catch((err) => next(err));
-  // });
+  app.put('/api/users/update/:id', (req, res, next) => {
+		const name = req.body.name,
+		 			email = req.body.email,
+					password = req.body.confirmPassword
+
+    User.findById(req.params.id)
+      .exec()
+      .then((user) => {
+        if(name) {
+					user.name = name
+				}
+				if(email) {
+					if(validateEmail(email)) {
+						user.email = email
+					} else {
+						res.status(412)
+						res.send('E-mail invalid')
+					}
+				}
+				if(password) {
+					if(password.length > 6) {
+						user.password = password
+					} else {
+						res.status(400)
+						res.send('Incorrect length')
+					}
+				}
+        user.save()
+          .then(() => res.json(user))
+          .catch((err) => next(err));
+      })
+      .catch((err) => next(err));
+  });
 
 };

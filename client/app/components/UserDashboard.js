@@ -10,12 +10,20 @@ class UserDashboard extends Component {
 		this.handleClick = this.handleClick.bind(this)
 		this.updateDetails = this.updateDetails.bind(this)
 		this.handleInput = this.handleInput.bind(this)
-		this.handleSubmit = this.handleSubmit.bind(this)
 		this.deleteAccount = this.deleteAccount.bind(this)
+		this.confirmPassword = this.confirmPassword.bind(this)
 		this.state = {
 			mode: 'overview',
 			user: '',
-			deleteFlow: 'unconfirmed'
+			deleteFlow: 'unconfirmed',
+			emailError: {
+				status: '',
+				text: ''
+			},
+			passwordError: {
+				status: '',
+				text: ''
+			}
 		}
 	}
 
@@ -28,11 +36,44 @@ class UserDashboard extends Component {
 
 	updateDetails(e) {
 		e.preventDefault()
-	}
-
-	handleSubmit(e) {
-		e.preventDefault()
-		return false
+		const id = this.state.user._id
+		if(this.state.email || this.state.name) {
+			this.setState({loading: true})
+			fetch(`/api/users/update/${id}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json'
+				},
+				body: JSON.stringify(this.state)
+			})
+				.then((res) => {
+					if(res.ok) {
+						this.setState({userUpdated: true, loading: false, emailError: {}, passwordError: {}})
+					} else {
+						this.setState({emailError: {status: 'error', text: 'invalid-email'}, loading: false})
+					}
+				})
+				.catch(err => console.log(err))
+		}
+		if(this.state.confirmPassword && this.state.confirmPassword.length) {
+			fetch(`/api/users/update/${id}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json'
+				},
+				body: JSON.stringify(this.state)
+			})
+				.then((res) => {
+					if(res.ok) {
+						this.setState({userUpdated: true, loading: false, emailError: {}, passwordError: {}})
+					} else {
+						this.setState({passwordError: {status: 'error', text: 'too-short'}, loading: false})
+					}
+				})
+				.catch(err => console.log(err))
+		}
 	}
 
 	handleInput(e) {
@@ -43,6 +84,36 @@ class UserDashboard extends Component {
 		this.setState({
 			[name]: value
 		})
+	}
+
+	confirmPassword(e) {
+		const target = e.target,
+		value = target.value,
+		name = target.name
+
+		this.setState({
+			confirmPassword: true
+		})
+
+		if(this.state.currentPassword === this.state.user.password) {
+			if(this.state.newPassword === value) {
+				this.setState({confirmPassword: value})
+			} else {
+				this.setState({
+					passwordError: {
+						status: 'no-match',
+						text: 'Passwords do not match'
+					}
+				})
+			}
+		} else {
+			this.setState({
+				passwordError: {
+					status: 'incorrect',
+					text: 'Password is incorrect'
+				}
+			})
+		}
 	}
 
 	deleteAccount(e) {
@@ -112,6 +183,20 @@ class UserDashboard extends Component {
 								</div>
 							</div>
 					}
+					{
+						this.state.userUpdated
+							&&
+							<div className="overlay">
+								<div className="modal">
+									<h2>Success</h2>
+									<p>Your account has been successfuly updated.</p>
+									<button className="hyperlink" onClick={(e) => {
+											e.preventDefault()
+											this.setState({userUpdated: false})
+										}}>Close</button>
+								</div>
+							</div>
+					}
 				</div>
 				<div>
 					{data
@@ -122,8 +207,26 @@ class UserDashboard extends Component {
 									: <div className="modal">
 											<h2>Edit details</h2>
 											<p>Edit your details below</p>
-											<form onSubmit={this.handleSubmit}>
+											<form onSubmit={(e) => {e.preventDefault()}}>
 												<div className="col">
+													<div className="error-info">
+														{
+															this.state.emailError.status === 'error'
+																&& <p>Please enter your full e-mail address.</p>
+														}
+														{
+															this.state.passwordError.text === 'incorrect-length' || this.state.passwordError.text === 'no-length'
+																&& <p>Your password needs to be at least 7 characters long.</p>
+														}
+														{
+															this.state.passwordError.status === 'no-match'
+															 && <p>Your passwords do not match.</p>
+														}
+														{
+															this.state.passwordError.status === 'incorrect'
+															 && <p>Your password is incorrect.</p>
+														}
+													</div>
 													<label>Name</label>
 													<input
 														name="name"
@@ -142,7 +245,7 @@ class UserDashboard extends Component {
 												<div className="col">
 													<label>Current Password</label>
 													<input
-														name="current-password"
+														name="currentPassword"
 														type="password"
 														placeholder="Jakeiscool1"
 														onChange={this.handleInput} />
@@ -150,7 +253,7 @@ class UserDashboard extends Component {
 												<div className="col">
 													<label>New Password</label>
 													<input
-														name="new-password"
+														name="newPassword"
 														type="password"
 														placeholder="Jakeiscool1"
 														onChange={this.handleInput} />
@@ -158,10 +261,10 @@ class UserDashboard extends Component {
 												<div className="col">
 													<label>Confirm Password</label>
 													<input
-														name="confirm-password"
+														name="confirmPassword"
 														type="password"
 														placeholder="Jakeiscool1"
-														onChange={this.handleInput} />
+														onChange={this.confirmPassword} />
 												</div>
 												<div className="col">
 													<button onClick={this.updateDetails}>Update</button>
